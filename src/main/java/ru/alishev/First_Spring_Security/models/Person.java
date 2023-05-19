@@ -23,12 +23,15 @@ public class Person {
     @Column(name = "username")
     private String username;
 
-    @Min(value = 100, message = "Дата рождения должна быть больше, чем 1900")
+    @Min(value = 1900, message = "Дата рождения должна быть больше, чем 1900")
     @Column(name = "year_of_birth")
     private int yearOfBirth;
 
     @Column(name = "password")
     private String password;
+
+    @Column(name = "role")
+    private String role;
 
     public Person() {
 
@@ -37,6 +40,14 @@ public class Person {
     public Person(String username, int yearOfBirth) {
         this.username = username;
         this.yearOfBirth = yearOfBirth;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public int getId() {

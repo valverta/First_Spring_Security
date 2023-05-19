@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.alishev.First_Spring_Security.models.Person;
 import ru.alishev.First_Spring_Security.repositories.PeopleRepository;
 import ru.alishev.First_Spring_Security.security.PersonDetails;
