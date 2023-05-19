@@ -5,9 +5,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import ru.alishev.First_Spring_Security.security.PersonDetails;
+import ru.alishev.First_Spring_Security.services.AdminRoleService;
 
 @Controller
 public class HelloController {
+
+    private final AdminRoleService adminRoleService;
+
+    public HelloController(AdminRoleService adminRoleService) {
+        this.adminRoleService = adminRoleService;
+    }
 
     @GetMapping("/hello")
     public String hello() {
@@ -25,6 +32,7 @@ public class HelloController {
 
     @GetMapping("/admin")
     public String admin() {
+        adminRoleService.doAdminStuff();
         return "admin";
     }
 }

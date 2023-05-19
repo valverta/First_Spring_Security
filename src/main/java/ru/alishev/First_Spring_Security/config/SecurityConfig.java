@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,6 +16,7 @@ import ru.alishev.First_Spring_Security.services.PersonDetailsService;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     private final PersonDetailsService personDetailsService;
@@ -46,7 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         // Конфигурируем авторизацию
 
         http.authorizeRequests()
-                .antMatchers("/admin").hasRole("ADMIN")
+                /* .antMatchers("/admin").hasRole("ADMIN") Теперь доступ к админке будет на уровне метода
+                в сервис слое, который будет вызван в контроллере админ страницы */
                 .antMatchers("/auth/login", "/auth/registration", "/error").permitAll()
                 .anyRequest().hasAnyRole("USER", "ADMIN")
                 .and()
