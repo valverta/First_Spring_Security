@@ -3,6 +3,7 @@ package ru.alishev.First_Spring_Security.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,7 +18,7 @@ import ru.alishev.First_Spring_Security.services.PersonDetailsService;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
+public class SecurityConfig {
 
     private final PersonDetailsService personDetailsService;
 
@@ -26,30 +27,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         this.personDetailsService = personDetailsService;
     }
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        // Конфигурируем сам Spring Security
-//        // Конфигурируем авторизацию
-//
-//        http.csrf().disable()  //отключаем защиту от межсайтовой подделки запросов
-//                .authorizeRequests()
-//                .antMatchers("/auth/login", "/error").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .formLogin().loginPage("/auth/login")
-//                .loginProcessingUrl("process_login")
-//                .defaultSuccessUrl("/hello", true)
-//                .failureUrl("/auth/login?error");
-//        return http.build();
-//    }
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Конфигурируем сам Spring Security
         // Конфигурируем авторизацию
 
         http.authorizeRequests()
-                /* .antMatchers("/admin").hasRole("ADMIN") Теперь доступ к админке будет на уровне метода
-                в сервис слое, который будет вызван в контроллере админ страницы */
+                //.antMatchers("/admin").hasRole("ADMIN")
                 .antMatchers("/auth/login", "/auth/registration", "/error").permitAll()
                 .anyRequest().hasAnyRole("USER", "ADMIN")
                 .and()
@@ -59,15 +43,43 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .failureUrl("/auth/login?error")
                 .and()
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/auth/login");
-        //.csrf().disable()  //отключаем защиту от межсайтовой подделки запросов, она включена автоматически
+        return http.build();
     }
 
-    // Настраивает аутентификацию (если использовать свою форму, то без этого не работает)
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(personDetailsService)
-                .passwordEncoder(getPasswordEncoder());
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+        auth.setPasswordEncoder(getPasswordEncoder());
+        auth.setUserDetailsService(personDetailsService);
+        return auth;
     }
+
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        // Конфигурируем сам Spring Security
+//        // Конфигурируем авторизацию
+//
+//        http.authorizeRequests()
+//                /* .antMatchers("/admin").hasRole("ADMIN") Теперь доступ к админке будет на уровне метода
+//                в сервис слое, который будет вызван в контроллере админ страницы */
+//                .antMatchers("/auth/login", "/auth/registration", "/error").permitAll()
+//                .anyRequest().hasAnyRole("USER", "ADMIN")
+//                .and()
+//                .formLogin().loginPage("/auth/login")
+//                .loginProcessingUrl("/process_login")
+//                .defaultSuccessUrl("/hello", true)
+//                .failureUrl("/auth/login?error")
+//                .and()
+//                .logout().logoutUrl("/logout").logoutSuccessUrl("/auth/login");
+//        //.csrf().disable()  //отключаем защиту от межсайтовой подделки запросов, она включена автоматически
+//    }
+
+    // Настраивает аутентификацию (если использовать свою форму, то без этого не работает)
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(personDetailsService)
+//                .passwordEncoder(getPasswordEncoder());
+//    }
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
